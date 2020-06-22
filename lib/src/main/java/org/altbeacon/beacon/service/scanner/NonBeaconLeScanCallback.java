@@ -1,6 +1,8 @@
 package org.altbeacon.beacon.service.scanner;
 
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.le.ScanRecord;
+
 import androidx.annotation.WorkerThread;
 
 /**
@@ -35,5 +37,5 @@ public interface NonBeaconLeScanCallback {
      * @param scanRecord The content of the advertisement record offered by
      *                   the remote device.
      */
-    void onNonBeaconLeScan(BluetoothDevice device, int rssi, byte[] scanRecord);
+    void onNonBeaconLeScan(BluetoothDevice device, int rssi, ScanRecord scanRecord);
 }

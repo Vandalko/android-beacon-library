@@ -11,7 +11,7 @@ android {
         // requires minSdkVersion 14, forcing a bump verson minSdkVersion 7
         // But since only 0.8% of Android devices have < SDK 14 as of Une 2017, this will become
         // the new min version for this library in order to target Android O
-        minSdkVersion 14
+        minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
         versionName version
@@ -65,6 +65,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
 }
 
-apply from: '../gradle/package.gradle'
+//apply from: '../gradle/package.gradle'
 
 

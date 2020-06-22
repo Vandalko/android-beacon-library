@@ -1,5 +1,6 @@
 package org.altbeacon.beacon.service;
 
+import android.bluetooth.le.ScanRecord;
 import android.os.AsyncTask;
 
 import org.altbeacon.beacon.BeaconManager;
@@ -13,6 +14,8 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.android.controller.ServiceController;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowScanResult;
+import org.robolectric.util.ReflectionHelpers;
 
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -50,8 +53,7 @@ public class BeaconServiceTest {
         ThreadPoolExecutor executor = (ThreadPoolExecutor) AsyncTask.THREAD_POOL_EXECUTOR;
         int activeThreadCountBeforeScan = executor.getActiveCount();
 
-        byte[] scanRecord = new byte[1];
-        callback.onLeScan(null, -59, scanRecord, 123456L);
+        callback.onLeScan(null, -59, null, 123456L);
 
         int activeThreadCountAfterScan = executor.getActiveCount();
 

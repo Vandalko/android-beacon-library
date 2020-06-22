@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanFilter;
+import android.bluetooth.le.ScanRecord;
 import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.Intent;
@@ -153,7 +154,7 @@ class ScanHelper {
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    void processScanResult(BluetoothDevice device, int rssi, byte[] scanRecord, long timestampMs) {
+    void processScanResult(BluetoothDevice device, int rssi, ScanRecord scanRecord, long timestampMs) {
         NonBeaconLeScanCallback nonBeaconLeScanCallback = mBeaconManager.getNonBeaconLeScanCallback();
 
         try {
@@ -257,7 +258,7 @@ class ScanHelper {
         @TargetApi(Build.VERSION_CODES.HONEYCOMB)
         @Override
         @MainThread
-        public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord, long timestampMs) {
+        public void onLeScan(BluetoothDevice device, int rssi, ScanRecord scanRecord, long timestampMs) {
             processScanResult(device, rssi, scanRecord, timestampMs);
         }
 
@@ -362,7 +363,7 @@ class ScanHelper {
      * <strong>This class is not thread safe.</strong>
      */
     private class ScanData {
-        ScanData(@NonNull BluetoothDevice device, int rssi, @NonNull byte[] scanRecord, long timestampMs) {
+        ScanData(@NonNull BluetoothDevice device, int rssi, @NonNull ScanRecord scanRecord, @NonNull long timestampMs) {
             this.device = device;
             this.rssi = rssi;
             this.scanRecord = scanRecord;
@@ -372,13 +373,13 @@ class ScanHelper {
         final int rssi;
 
         @NonNull
-        BluetoothDevice device;
+        final BluetoothDevice device;
 
         @NonNull
-        byte[] scanRecord;
+        final ScanRecord scanRecord;
 
         @NonNull
-        long timestampMs;
+        final long timestampMs;
     }
 
     private class ScanProcessor extends AsyncTask<ScanHelper.ScanData, Void, Void> {
@@ -397,7 +398,7 @@ class ScanHelper {
             Beacon beacon = null;
 
             for (BeaconParser parser : ScanHelper.this.mBeaconParsers) {
-                beacon = parser.fromScanData(scanData.scanRecord, scanData.rssi, scanData.device, scanData.timestampMs);
+                beacon = parser.fromScanData(scanData.scanRecord.getBytes(), scanData.rssi, scanData.device, scanData.timestampMs);
 
                 if (beacon != null) {
                     break;
@@ -410,7 +411,7 @@ class ScanHelper {
                 mDetectionTracker.recordDetection();
                 if (mCycledScanner != null && !mCycledScanner.getDistinctPacketsDetectedPerScan()) {
                     if (!mDistinctPacketDetector.isPacketDistinct(scanData.device.getAddress(),
-                            scanData.scanRecord)) {
+                            scanData.scanRecord.getBytes())) {
                         LogManager.i(TAG, "Non-distinct packets detected in a single scan.  Restarting scans unecessary.");
                         mCycledScanner.setDistinctPacketsDetectedPerScan(true);
                     }
